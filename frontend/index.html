@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LMS - Learn Without Limits</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div id="alerts"></div>
+
+  <div class="container">
+    <div class="hero">
+      <h1>Learn Without Limits</h1>
+      <p>Access world-class courses designed to elevate your skills and career</p>
+      <div class="hero-buttons">
+        <a href="/login.html" class="btn btn-primary">Get Started</a>
+        <a href="/courses.html" class="btn btn-secondary">Explore Courses</a>
+      </div>
+    </div>
+
+    <div class="grid grid-3" style="margin-top: 4rem;">
+      <div class="card">
+        <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎯</div>
+        <h3 class="card-title">Structured Learning</h3>
+        <p class="card-subtitle" style="margin-bottom: 1rem; font-size: 0.95rem; line-height: 1.6;">
+          Carefully curated courses structured to take you from beginner to expert.
+        </p>
+      </div>
+
+      <div class="card">
+        <div style="font-size: 2.5rem; margin-bottom: 1rem;">📊</div>
+        <h3 class="card-title">Track Progress</h3>
+        <p class="card-subtitle" style="margin-bottom: 1rem; font-size: 0.95rem; line-height: 1.6;">
+          Monitor your learning journey with detailed progress metrics and milestones.
+        </p>
+      </div>
+
+      <div class="card">
+        <div style="font-size: 2.5rem; margin-bottom: 1rem;">🏆</div>
+        <h3 class="card-title">Earn Certificates</h3>
+        <p class="card-subtitle" style="margin-bottom: 1rem; font-size: 0.95rem; line-height: 1.6;">
+          Complete courses and earn recognized certificates to boost your profile.
+        </p>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 5rem; padding: 3rem; background: linear-gradient(135deg, #f0f9ff, #ecfdf5); border-radius: 1.25rem; border: 1px solid var(--border-light);">
+      <h2 style="font-size: 2rem; margin-bottom: 1rem; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Ready to start learning?</h2>
+      <p style="color: var(--text-secondary); margin: 1rem 0; font-size: 1.05rem;">Join thousands of learners transforming their careers with our platform.</p>
+      <a href="/login.html" class="btn btn-primary" style="margin-top: 1.5rem;">Start Your Journey</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { renderNavigation, renderAlertContainer } from '/js/utils.js';
+    renderAlertContainer();
+    renderNavigation();
+  </script>
+</body>
+</html>

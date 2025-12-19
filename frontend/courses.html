@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Courses - LMS</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div id="alerts"></div>
+
+  <div class="container">
+    <div style="margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border);">
+      <h1 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem;">Available Courses</h1>
+      <p style="color: var(--text-secondary); font-size: 1.05rem;">Discover our collection of expertly crafted courses</p>
+    </div>
+
+    <div id="courses-list" class="grid grid-2"></div>
+  </div>
+
+  <script type="module">
+    import { auth, courses, enrollments } from '/js/api.js';
+    import { renderNavigation, renderAlertContainer, showAlert, formatDate } from '/js/utils.js';
+
+    renderAlertContainer();
+    renderNavigation();
+
+    let isAuthenticated = auth.isAuthenticated();
+
+    async function loadCourses() {
+      try {
+        const data = await courses.getAll();
+        const container = document.getElementById('courses-list');
+        
+        if (data.length === 0) {
+          container.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;"><div class="empty-state-icon">📚</div><p class="empty-state-title">No courses available</p><p class="empty-state-description">Check back soon for new learning opportunities</p></div>';
+          return;
+        }
+
+        container.innerHTML = data.map(course => `
+          <div class="card">
+            <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.25rem;">
+              <div style="font-size: 2.5rem;">📖</div>
+              <div style="flex: 1;">
+                <h3 class="card-title">${course.title}</h3>
+                <p class="card-subtitle">${course.description || 'Explore this course to enhance your skills'}</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <p style="font-size: 0.85rem; color: var(--text-muted);">📅 Created ${formatDate(course.created_at)}</p>
+            </div>
+            <div class="card-footer">
+              ${isAuthenticated ? `<button class="btn btn-primary" style="width: 100%; text-align: center;" onclick="enrollCourse(${course.id})">Enroll Now →</button>` : `<a href="/login.html" class="btn btn-primary" style="width: 100%; text-align: center;">Login to Enroll →</a>`}
+            </div>
+          </div>
+        `).join('');
+      } catch (error) {
+        showAlert('Failed to load courses', 'error');
+      }
+    }
+
+    window.enrollCourse = async function(courseId) {
+      try {
+        const result = await enrollments.enroll(courseId);
+        if (result.error) {
+          showAlert(result.error, 'error');
+        } else {
+          showAlert('✓ You are now enrolled! Redirecting to dashboard...', 'success');
+          setTimeout(() => {
+            window.location.href = '/dashboard.html';
+          }, 1500);
+        }
+      } catch (error) {
+        showAlert('Failed to enroll', 'error');
+      }
+    };
+
+    loadCourses();
+  </script>
+</body>
+</html>

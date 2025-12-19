@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - LMS</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div id="alerts"></div>
+
+  <div class="container" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 2rem;">
+    <div class="form-container">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">📚</div>
+        <h1 class="form-title" id="form-title">Welcome Back</h1>
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">Sign in to continue your learning journey</p>
+      </div>
+
+      <form id="auth-form">
+        <div id="register-fields" style="display: none;">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" placeholder="Enter your full name" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+          <span id="submit-btn-text">Sign In</span>
+        </button>
+      </form>
+
+      <div class="form-divider">
+        <span id="toggle-text">Don't have an account?</span>
+        <a href="#" id="toggle-link" onclick="toggleMode(event)">Create one here</a>
+      </div>
+
+      <div style="text-align: center; border-top: 1px solid var(--border); padding-top: 1.5rem; margin-top: 1.5rem;">
+        <a href="/" class="btn btn-secondary" style="width: 100%; text-align: center;">← Back to Home</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { auth } from '/js/api.js';
+    import { renderNavigation, renderAlertContainer, showAlert, validateEmail, validatePassword } from '/js/utils.js';
+
+    renderAlertContainer();
+    renderNavigation();
+
+    let isLogin = true;
+    const form = document.getElementById('auth-form');
+    const toggleLink = document.getElementById('toggle-link');
+    const formTitle = document.getElementById('form-title');
+    const submitBtnText = document.getElementById('submit-btn-text');
+    const toggleText = document.getElementById('toggle-text');
+    const registerFields = document.getElementById('register-fields');
+    const nameInput = document.getElementById('name');
+
+    toggleLink.addEventListener('click', toggleMode);
+    form.addEventListener('submit', handleSubmit);
+
+    function toggleMode(e) {
+      e.preventDefault();
+      isLogin = !isLogin;
+      
+      if (isLogin) {
+        formTitle.textContent = 'Welcome Back';
+        submitBtnText.textContent = 'Sign In';
+        toggleText.textContent = "Don't have an account?";
+        toggleLink.textContent = 'Create one here';
+        registerFields.style.display = 'none';
+        nameInput.required = false;
+        document.querySelector('p:nth-of-type(2)').textContent = 'Sign in to continue your learning journey';
+      } else {
+        formTitle.textContent = 'Join Us';
+        submitBtnText.textContent = 'Create Account';
+        toggleText.textContent = 'Already have an account?';
+        toggleLink.textContent = 'Sign in here';
+        registerFields.style.display = 'block';
+        nameInput.required = true;
+        document.querySelector('p:nth-of-type(2)').textContent = 'Create an account to start learning today';
+      }
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const name = document.getElementById('name').value.trim();
+
+      if (!validateEmail(email)) {
+        showAlert('Please enter a valid email address', 'error');
+        return;
+      }
+
+      if (!validatePassword(password)) {
+        showAlert('Password must be at least 6 characters long', 'error');
+        return;
+      }
+
+      if (!isLogin && !name) {
+        showAlert('Please enter your full name', 'error');
+        return;
+      }
+
+      try {
+        let result;
+        if (isLogin) {
+          result = await auth.login(email, password);
+        } else {
+          result = await auth.register(name, email, password);
+        }
+
+        if (result.ok) {
+          showAlert(isLogin ? '✓ Welcome back!' : '✓ Account created successfully!', 'success');
+          setTimeout(() => {
+            window.location.href = '/dashboard.html';
+          }, 1500);
+        } else {
+          showAlert(result.data.error || 'An error occurred', 'error');
+        }
+      } catch (error) {
+        showAlert('Network error. Please try again.', 'error');
+      }
+    }
+
+    window.toggleMode = toggleMode;
+  </script>
+</body>
+</html>
